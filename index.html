@@ -1,0 +1,433 @@
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wisteria</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600&amp;display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Source Code Pro', monospace;
+      background: #0a0a0a;
+      color: #e0e0e0;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Matrix Rain Canvas */
+    #matrix-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* Enter Screen */
+    .enter-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      cursor: pointer;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+
+    .enter-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .enter-text {
+      font-size: 1.5rem;
+      color: #a855f7;
+      text-shadow: 0 0 20px rgba(168, 85, 247, 0.6);
+      animation: pulse 2s ease-in-out infinite;
+      letter-spacing: 0.2em;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+
+    /* Main Content */
+    .main-content {
+      position: relative;
+      z-index: 10;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* Profile Card */
+    .profile-card {
+      background: linear-gradient(135deg, rgba(20, 20, 25, 0.95), rgba(30, 20, 40, 0.9));
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+      backdrop-filter: blur(10px);
+      box-shadow: 
+        0 0 40px rgba(168, 85, 247, 0.15),
+        0 20px 60px rgba(0, 0, 0, 0.5);
+      max-width: 380px;
+      width: 100%;
+      animation: fadeIn 1s ease forwards;
+      animation-delay: 0.3s;
+      opacity: 0;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    /* Avatar */
+    .avatar-container {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      margin: 0 auto 20px;
+    }
+
+    .avatar {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(168, 85, 247, 0.5);
+      box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .avatar:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 50px rgba(168, 85, 247, 0.6);
+    }
+
+    .status-indicator {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      width: 20px;
+      height: 20px;
+      background: #22c55e;
+      border-radius: 50%;
+      border: 3px solid #14141a;
+      box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);
+    }
+
+    /* Username */
+    .username {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: #a855f7;
+      text-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+      margin-bottom: 8px;
+    }
+
+    .tag {
+      color: #888;
+      font-size: 0.9rem;
+      margin-bottom: 25px;
+    }
+
+    /* Social Links */
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 25px;
+      flex-wrap: wrap;
+    }
+
+    .social-link {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .social-link svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+    }
+
+    .social-link.discord {
+      background: rgba(88, 101, 242, 0.2);
+      color: #5865F2;
+    }
+    .social-link.discord:hover {
+      background: rgba(88, 101, 242, 0.4);
+      box-shadow: 0 0 20px rgba(88, 101, 242, 0.4);
+      transform: translateY(-3px);
+    }
+
+    .social-link.github {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+    .social-link.github:hover {
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+      transform: translateY(-3px);
+    }
+
+    .social-link.roblox {
+      background: rgba(255, 0, 0, 0.15);
+      color: #ff4444;
+    }
+    .social-link.roblox:hover {
+      background: rgba(255, 0, 0, 0.3);
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.4);
+      transform: translateY(-3px);
+    }
+
+    .social-link.spotify {
+      background: rgba(30, 215, 96, 0.15);
+      color: #1ed760;
+    }
+    .social-link.spotify:hover {
+      background: rgba(30, 215, 96, 0.3);
+      box-shadow: 0 0 20px rgba(30, 215, 96, 0.4);
+      transform: translateY(-3px);
+    }
+
+    .social-link.twitter {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+    .social-link.twitter:hover {
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+      transform: translateY(-3px);
+    }
+
+    /* More Info Button */
+    .more-info-btn {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(139, 92, 246, 0.2));
+      border: 1px solid rgba(168, 85, 247, 0.4);
+      color: #a855f7;
+      padding: 12px 30px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+    }
+
+    .more-info-btn:hover {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.5), rgba(139, 92, 246, 0.4));
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+      transform: translateY(-2px);
+    }
+
+    /* Quote Section */
+    .quote-section {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s ease, opacity 0.5s ease;
+      opacity: 0;
+    }
+
+    .quote-section.visible {
+      max-height: 200px;
+      opacity: 1;
+    }
+
+    .quote {
+      color: #aaa;
+      font-style: italic;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      padding: 15px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 10px;
+      border-left: 3px solid #a855f7;
+    }
+
+    .quote-author {
+      color: #a855f7;
+      margin-top: 10px;
+      font-size: 0.85rem;
+    }
+
+    /* YouTube Player (hidden) */
+    #youtube-player {
+      position: fixed;
+      bottom: -1000px;
+      left: -1000px;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 480px) {
+      .profile-card {
+        padding: 30px 20px;
+      }
+      .avatar-container {
+        width: 120px;
+        height: 120px;
+      }
+      .username {
+        font-size: 1.5rem;
+      }
+      .social-link {
+        width: 40px;
+        height: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Matrix Rain Canvas -->
+  <canvas id="matrix-canvas" width="1355" height="944"></canvas>
+
+  <!-- Enter Screen -->
+  <div class="enter-screen hidden" id="enter-screen">
+    <p class="enter-text">CLICK TO ENTER</p>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="profile-card">
+      <div class="avatar-container">
+        <img src="wisteria-avatar.webp" alt="Wisteria" class="avatar">
+        <div class="status-indicator"></div>
+      </div>
+      
+      <h1 class="username">Wisteria</h1>
+      <p class="tag">@wisteria</p>
+
+      <div class="social-links">
+        <!-- Discord -->
+        <a href="https://discord.com/users/1426753808968716338" target="_blank" class="social-link discord" title="Discord">
+          <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"></path></svg>
+        </a>
+        
+        <!-- GitHub -->
+        <a href="https://github.com/wstrii" target="_blank" class="social-link github" title="GitHub">
+          <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"></path></svg>
+        </a>
+        
+        <!-- Roblox -->
+        <a href="https://www.roblox.com/users/4151578925/profile" target="_blank" class="social-link roblox" title="Roblox">
+          <svg viewBox="0 0 24 24"><path d="M5.164 0L0 18.627 18.836 24 24 5.373 5.164 0zM9.914 15.063l-2.98-.78.78-2.98 2.98.78-.78 2.98z"></path></svg>
+        </a>
+        
+        <!-- Spotify -->
+        <a href="https://open.spotify.com/user/31xwbvqkpf2eqpxkxywnpxhujzfi" target="_blank" class="social-link spotify" title="Spotify">
+          <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"></path></svg>
+        </a>
+        
+        <!-- X (Twitter) -->
+        <a href="https://x.com/wstriii_" target="_blank" class="social-link twitter" title="X">
+          <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+        </a>
+      </div>
+
+      <button class="more-info-btn" id="more-info-btn">More Info</button>
+
+      <div class="quote-section" id="quote-section">
+        <div class="quote">
+          "I'm not the protagonist of a novel or anything. I'm just a college student who likes to read, like you could find anywhere. But... if, for argument's sake, you were to write a story with me in the lead role, it would certainly be... a tragedy."
+          <p class="quote-author">— Ken Kaneki</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden YouTube Player for Music -->
+  <iframe id="youtube-player" src="https://www.youtube.com/embed/mj9av_hGxPc?autoplay=1&amp;loop=1&amp;playlist=mj9av_hGxPc" allow="autoplay" frameborder="0"></iframe>
+
+  <script>
+    // ========== MATRIX RAIN ANIMATION ==========
+    const canvas = document.getElementById('matrix-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789';
+    const charArray = chars.split('');
+    const fontSize = 16;
+    let columns = Math.floor(canvas.width / fontSize);
+    let drops = Array(columns).fill(1);
+
+    function drawMatrix() {
+      ctx.fillStyle = 'rgba(10, 10, 10, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#a855f7';
+      ctx.font = `${fontSize}px monospace`;
+
+      for (let i = 0; i < drops.length; i++) {
+        const char = charArray[Math.floor(Math.random() * charArray.length)];
+        ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+
+    setInterval(drawMatrix, 35);
+
+    window.addEventListener('resize', () => {
+      columns = Math.floor(canvas.width / fontSize);
+      drops = Array(columns).fill(1);
+    });
+
+    // ========== ENTER SCREEN ==========
+    const enterScreen = document.getElementById('enter-screen');
+    const youtubePlayer = document.getElementById('youtube-player');
+
+    enterScreen.addEventListener('click', () => {
+      enterScreen.classList.add('hidden');
+      // Start YouTube music (with autoplay)
+      youtubePlayer.src = 'https://www.youtube.com/embed/mj9av_hGxPc?autoplay=1&loop=1&playlist=mj9av_hGxPc';
+    });
+
+    // ========== MORE INFO TOGGLE ==========
+    const moreInfoBtn = document.getElementById('more-info-btn');
+    const quoteSection = document.getElementById('quote-section');
+
+    moreInfoBtn.addEventListener('click', () => {
+      quoteSection.classList.toggle('visible');
+      moreInfoBtn.textContent = quoteSection.classList.contains('visible') ? 'Less Info' : 'More Info';
+    });
+  </script>
+
+
+</body></html>
