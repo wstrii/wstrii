@@ -1,207 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wisteria</title>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      font-family: 'Source Code Pro', monospace;
-      background:#0a0a0a;
-      color:#e0e0e0;
-      min-height:100vh;
-      overflow:hidden;
-    }
-    #matrix-canvas {
-      position:fixed; top:0; left:0; width:100%; height:100%; z-index:1; opacity:0.65;
-    }
-    .enter-screen {
-      position:fixed; top:0; left:0; width:100%; height:100%;
-      background:rgba(0,0,0,0.97);
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      z-index:1000; cursor:pointer;
-      transition:opacity 1s ease;
-    }
-    .enter-screen.hidden { opacity:0; pointer-events:none; }
-    .enter-text {
-      font-size:1.7rem; color:#e879f9; letter-spacing:0.3em;
-      text-shadow:0 0 35px #e879f9;
-      animation:pulse 1.6s ease-in-out infinite;
-    }
-    @keyframes pulse { 0%,100%{opacity:0.7; transform:scale(1)} 50%{opacity:1; transform:scale(1.08)} }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[🗡]Wisteria</title>
+    <meta name="description" content="Wisteria">
+    <meta name="author" content="Wisteria">
+   
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/vp7joD09XIU8AsiiIqr7zP4aEIl1/social-images/social-1760272049748-narcissist_banner.webp">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@wstrii">
+    <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/vp7joD09XIU8AsiiIqr7zP4aEIl1/social-images/social-1760272049748-narcissist_banner.webp">
+    <meta property="og:title" content="[🗡]Wisteria">
+    <meta name="twitter:title" content="[🗡]Wisteria">
+    <meta property="og:description" content="Wisteria">
+    <meta name="twitter:description" content="Wisteria">
 
-    .main-content { position:relative; z-index:10; height:100vh; display:flex; align-items:center; justify-content:center; padding:20px; }
-
-    .profile-card {
-      background:linear-gradient(135deg, rgba(25,25,35,0.55), rgba(40,20,60,0.45));
-      backdrop-filter:blur(16px);
-      -webkit-backdrop-filter:blur(16px);
-      border:1px solid rgba(232,121,249,0.4);
-      border-radius:24px;
-      padding:45px 40px;
-      text-align:center;
-      box-shadow:
-        0 0 60px rgba(232,121,249,0.3),
-        0 25px 70px rgba(0,0,0,0.6);
-      max-width:400px; width:100%;
-      animation:fadeIn 1.2s ease forwards 0.4s;
-      opacity:0;
-    }
-    @keyframes fadeIn { to {opacity:1} }
-
-    .avatar-container { position:relative; width:150px; height:150px; margin:0 auto 25px; }
-    .avatar {
-      width:100%; height:100%; border-radius:50%; object-fit:cover;
-      border:4px solid rgba(232,121,249,0.7);
-      box-shadow:0 0 45px rgba(232,121,249,0.6);
-      transition:all .4s;
-    }
-    .avatar:hover { transform:scale(1.09); box-shadow:0 0 0 70px rgba(232,121,249,0.8); }
-    .status-indicator {
-      position:absolute; bottom:8px; right:8px; width:24px; height:24px;
-      background:#34d399; border:4px solid #0f0a0f;
-      border-radius:50%; box-shadow:0 0 20px #34d399;
-    }
-
-    .username { font-size:2rem; font-weight:600; color:#e879f9; text-shadow:0 0 30px #e879f9; margin-bottom:8px; }
-    .tag { color:#a0a0a0; margin-bottom:30px; }
-
-    .social-links { display:flex; justify-content:center; gap:18px; flex-wrap:wrap; margin-bottom:30px; }
-    .social-link {
-      width:width:50px; height:50px; border-radius:14px; display:flex; align-items:center; justify-content:center;
-      transition:all .35s; border:1px solid rgba(255,255,255,0.15);
-    }
-    .social-link:hover { transform:translateY(-6px); }
-
-    .social-link.discord   { background:rgba(88,101,242,0.3); color:#5865F2; }
-    .social-link.discord:hover   { background:rgba(88,101,242,0.6); box-shadow:0 0 30px rgba(88,101,242,0.6); }
-    .social-link.github    { background:rgba(255,255,255,0.15); color:#fff; }
-    .social-link.github:hover    { background:rgba(255,255,255,0.35); box-shadow:0 0 30px rgba(255,255,255,0.5); }
-    .social-link.roblox    { background:rgba(255,0,0,0.25); color:#ff4444; }
-    .social-link.roblox:hover    { background:rgba(255,0,0,0.5); box-shadow:0 0 30px rgba(255,0,0,0.6); }
-    .social-link.spotify   { background:rgba(30,215,96,0.25); color:#1ed760; }
-    .social-link.spotify:hover   { background:rgba(30,215,96,0.5); box-shadow:0 0 30px rgba(30,215,96,0.6); }
-    .social-link.twitter   { background:rgba(255,255,255,0.15); color:#fff; }
-    .social-link.twitter:hover   { background:rgba(255,255,255,0.35); box-shadow:0 0 30px rgba(255,255,255,0.5); }
-
-    .more-info-btn {
-      background:linear-gradient(135deg, rgba(232,121,249,0.45), rgba(190,24,93,0.35));
-      border:1px solid rgba(232,121,249,0.6); color:#e879f9; padding:14px 34px;
-      border-radius:12px; cursor:pointer; transition:all .4s; font-size:1rem;
-    }
-    .more-info-btn:hover {
-      background:linear-gradient(135deg, rgba(232,121,249,0.7), rgba(190,24,93,0.55));
-      box-shadow:0 0 35px rgba(232,121,249,0.6); transform:translateY(-4px);
-    }
-
-    .quote-section { max-height:0; overflow:hidden; opacity:0; transition:all .6s ease; }
-    .quote-section.visible { max-height:220px; opacity:1; margin-top:20px; }
-    .quote { color:#ccc; background:rgba(0,0,0,0.4); padding:18px; border-radius:12px; border-left:4px solid #e879f9; }
-    .quote-author { color:#e879f9; margin-top:12px; }
-
-    /* Super important – the iframe was stealing clicks */
-    #youtube-player {
-      position:fixed; top:-9999px; left:-9999px; width:1px; height:1px; opacity:0; pointer-events:none;
-    }
-  </style>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: black;
+            color: white;
+            font-family: sans-serif;
+            overflow: hidden;
+        }
+        :root {
+            --glow-primary: 0 0 20px rgba(255, 255, 255, 0.5);
+            --glow-strong: 0 0 30px rgba(255, 255, 255, 0.8);
+        }
+        .shadow-glow-primary {
+            box-shadow: var(--glow-primary);
+        }
+    </style>
 </head>
 <body>
-
-  <canvas id="matrix-canvas"></canvas>
-
-  
-  <div class="enter-screen" id="enter-screen">
-    <p class="enter-text">CLICK TO ENTER</p>
-  </div>
-
-  <div class="main-content">
-    <div class="profile-card">
-      <div class="avatar-container">
-        <img src="wisteria-avatar.webp" alt="Wisteria" class="avatar">
-        <div class="status-indicator"></div>
-      </div>
-      <h1 class="username">Wisteria</h1>
-      <p class="tag">@wisteria</p>
-
-      <div class="social-links">
-        <a href="https://discord.com/users/1426753808968716338" target="_blank" class="social-link discord" title="Discord">
-          <svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515..."/></svg>
-        </a>
-        <a href="https://github.com/wstrii" target="_blank" class="social-link github" title="GitHub">
-          <svg viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12..."/></svg>
-        </a>
-        <a href="https://www.roblox.com/users/4151578925/profile" target="_blank" class="social-link roblox" title="Roblox">
-          <svg viewBox="0 0 24 24"><path d="M5.164 0L0 18.627..."/></svg>
-        </a>
-        <a href="https://open.spotify.com/user/31xwbvqkpf2eqpxkxywnpxhujzfi" target="_blank" class="social-link spotify" title="Spotify">
-          <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12..."/></svg>
-        </a>
-        <a href="https://x.com/wstriii_" target="_blank" class="social-link twitter" title="X">
-          <svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308..."/></svg>
-        </a>
-      </div>
-
-      <button class="more-info-btn" id="more-info-btn">More Info</button>
-      <div class="quote-section" id="quote-section">
-        <div class="quote">
-          "I'm not the protagonist of a novel or anything. I'm just a college student who likes to read, like you could find anywhere. But... if, for argument's sake, you were to write a story with me in the lead role, it would certainly be... a tragedy."
-          <p class="quote-author">— Ken Kaneki</p>
+    <div class="fixed inset-0 flex items-center justify-center z-10">
+        <div class="flex flex-col items-center relative">
+            <div class="absolute -top-12 left-1/2 -translate-x-1/2 bg-white text-black px-5 py-2.5 rounded-[20px] font-bold text-lg whitespace-nowrap shadow-lg">
+                @Wisteria
+                <div class="absolute top-full left-1/2 -ml-2 border-8 border-transparent border-t-white/90"></div>
+            </div>
+            <div class="w-36 h-36 rounded-full bg-cover bg-center transition-transform hover:scale-105" 
+                 style="background-image: url('https://cdn.discordapp.com/avatars/1426753808968716338/6282f925d82b825e6ae94a48b96cc68a.webp?size=1024'); box-shadow: var(--glow-primary);">
+            </div>
+            <div class="mt-5 bg-black/70 rounded-2xl px-4 py-3 border border-white/50 flex gap-4" style="box-shadow: var(--glow-strong);">
+                <a href="https://discord.com/users/1426753808968716338" target="_blank" rel="noopener noreferrer" class="w-6 h-6 transition-all hover:scale-125" title="Discord">
+                    <svg viewBox="0 0 24 24" class="w-full h-full fill-white">
+                        <path d="M19.27 5.33C17.94 4.71 16.5 4.26 15 4a.09.09 0 0 0-.07.03c-.18.33-.39.76-.53 1.09a16.09 16.09 0 0 0-4.8 0c-.14-.34-.35-.76-.54-1.09-.01-.02-.04-.03-.07-.03-1.5.26-2.93.71-4.27 1.33-.01 0-.02.01-.03.02-2.72 4.07-3.47 8.03-3.1 11.95v.02c.01.02.02.04.04.05 1.8 1.32 3.53 2.12 5.24 2.65.03.01.06 0 .07-.02.4-.55.76-1.13 1.07-1.74.02-.04 0-.08-.04-.09-.57-.22-1.11-.48-1.64-.78-.04-.02-.04-.08-.01-.11.11-.08.22-.17.33-.25.02-.02.05-.02.07-.01 3.44 1.57 7.15 1.57 10.55 0 .02-.01.05-.01.07.01.11.09.22.17.33.26.04.03.04.09-.01.11-.52.31-1.07.56-1.64.78-.04.01-.05.06-.04.09.32.61.68 1.19 1.07 1.74.03.01.06.02.09.01 1.72-.53 3.45-1.33 5.25-2.65.02-.01.03-.03.04-.05.44-4.53-.73-8.46-3.1-11.95-.01-.01-.02-.02-.04-.02zM8.52 14.91c-1.03 0-1.89-.95-1.89-2.12 0-1.17.84-2.13 1.89-2.13 1.06 0 1.9.96 1.89 2.13 0 1.17-.84 2.12-1.89 2.12zm6.97 0c-1.03 0-1.89-.95-1.89-2.12 0-1.17.84-2.13 1.89-2.13 1.06 0 1.9.96 1.89 2.13 0 1.17-.83 2.12-1.89 2.12z"></path>
+                    </svg>
+                </a>
+                <a href="https://github.com/wstrii" target="_blank" rel="noopener noreferrer" class="w-6 h-6 transition-all hover:scale-125" title="Github">
+                    <svg viewBox="0 0 24 24" class="w-full h-full fill-white">
+                        <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.387.6.111.82-.261.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.333-1.756-1.333-1.756-1.09-.745.083-.729.083-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"></path>
+                    </svg>
+                </a>
+                <a href="https://www.roblox.com/users/798074347/profile" target="_blank" rel="noopener noreferrer" class="w-6 h-6 transition-all hover:scale-125" title="Roblox">
+                    <svg viewBox="0.16 0 23.68 24" class="w-full h-full fill-white">
+                        <path d="M5.164 0L.16 18.928L18.836 24L23.84 5.072Zm8.747 15.354l-5.219-1.417l1.399-5.29l5.22 1.418l-1.4 5.29z"></path>
+                    </svg>
+                </a>
+                <a href="https://open.spotify.com/user/3173ohxrllovycvqb76j3jhjshzu?si=5e7cfa37a6ba4c55" target="_blank" rel="noopener noreferrer" class="w-6 h-6 transition-all hover:scale-125" title="Spotify">
+                    <svg viewBox="0 0 24 24" class="w-full h-full fill-white">
+                        <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"></path>
+                    </svg>
+                </a>
+                <a href="https://x.com/wstriii" target="_blank" rel="noopener noreferrer" class="w-6 h-6 transition-all hover:scale-125" title="X (Twitter)">
+                    <svg viewBox="0 0 24 24" class="w-full h-full fill-white">
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+                    </svg>
+                </a>
+            </div>
+            <button class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-black/85 text-white border-0 rounded-xl font-bold hover:scale-110 transition-transform shadow-glow-primary h-10 px-4 py-2 mt-4">
+                More Info
+            </button>
         </div>
-      </div>
     </div>
-  </div>
 
-  <!-- Hidden music player – moved to the very bottom and made unclickable -->
-  <iframe id="youtube-player" allow="autoplay" frameborder="0"></iframe>
-
-  <script>
-    // Matrix Rain (brighter & faster)
-    const canvas = document.getElementById('matrix-canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    window.addEventListener('resize', () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; });
-
-    const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789';
-    const fontSize = 16;
-    let columns = Math.floor(canvas.width / fontSize);
-    let drops = Array(columns).fill(1);
-
-    function draw() {
-      ctx.fillStyle = 'rgba(10,10,10,0.05)';
-      ctx.fillRect(0,0,canvas.width,canvas.height);
-      ctx.fillStyle = '#e879f9';
-      ctx.font = `${fontSize}px monospace`;
-
-      for (let i = 0; i < drops.length; i++) {
-        const char = chars[Math.floor(Math.random()*chars.length)];
-        ctx.fillText(char, i*fontSize, drops[i]*fontSize);
-        if (drops[i]*fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-        drops[i]++;
-      }
-    }
-    setInterval(draw, 30);
-
-    // Click to Enter – now 100% reliable
-    const enterScreen = document.getElementById('enter-screen');
-    const player = document.getElementById('youtube-player');
-
-    enterScreen.addEventListener('click', function startExperience() {
-      enterScreen.classList.add('hidden');
-      // Start music only after real user click (required by browsers)
-      player.src = 'https://www.youtube.com/embed/mj9av_hGxPc?autoplay=1&loop=1&playlist=mj9av_hGxPc&mute=0';
-      // Remove the listener so it can't be triggered again
-      enterScreen.removeEventListener('click', startExperience);
-    });
-
-    // More Info toggle
-    document.getElementById('more-info-btn').addEventListener('click', () => {
-      const q = document.getElementById('quote-section');
-      q.classList.toggle('visible');
-      document.getElementById('more-info-btn').textContent = q.classList.contains('visible') ? 'Less Info' : 'More Info';
-    });
-  </script>
+    <!-- Hidden YouTube Audio Player (autoplay + loop) -->
+    <iframe 
+        src="https://www.youtube.com/embed/mj9av_hGxPc?autoplay=1&loop=1&playlist=mj9av_hGxPc&controls=0&modestbranding=1&iv_load_policy=3&rel=0" 
+        frameborder="0" 
+        allow="autoplay; encrypted-media" 
+        style="position:absolute; width:0; height:0; border:0;">
+    </iframe>
 </body>
 </html>
