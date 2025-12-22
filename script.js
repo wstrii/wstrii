@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  const startMessage = "Click here to see the motion baby";
+  const startMessage = "Click to enter";
   let startTextContent = '';
   let startIndex = 0;
   let startCursorVisible = true;
@@ -119,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function initializeVisitorCounter() {
     let totalVisitors = localStorage.getItem('totalVisitorCount');
     if (!totalVisitors) {
-      totalVisitors = 8080808080;
+      totalVisitors = 1337;
       localStorage.setItem('totalVisitorCount', totalVisitors);
     } else {
       totalVisitors = parseInt(totalVisitors);
@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
     typeWriterBio();
   });
 
-  const name = "xetofbo!";
+  const name = "Rio";
   let nameText = '';
   let nameIndex = 0;
   let isNameDeleting = false;
@@ -235,8 +235,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   const bioMessages = [
-    "this source pre fire ngl ---!!!",
-    "\"Hello, World!\""
+    "Better than you",
+    "\"I love my girl so so much!\""
   ];
   let bioText = '';
   let bioIndex = 0;
@@ -667,4 +667,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   typeWriterStart();
+
 });
