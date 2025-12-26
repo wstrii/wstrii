@@ -38,7 +38,7 @@
             align-items: center;
             justify-content: center;
             z-index: 100;
-            cursor: pointer;
+            cursor: url('./assets/custom_cursor.png'), pointer;
             transition: opacity 0.3s;
         }
 
@@ -76,7 +76,7 @@
             background: none;
             border: none;
             color: #a855f7;
-            cursor: pointer;
+            cursor: url('./assets/custom_cursor.png'), pointer;
             padding: 0;
             display: flex;
             align-items: center;
@@ -92,7 +92,7 @@
             height: 0.25rem;
             border-radius: 9999px;
             outline: none;
-            cursor: pointer;
+            cursor: url('./assets/custom_cursor.png'), pointer;
             -webkit-appearance: none;
         }
 
@@ -178,14 +178,23 @@
             margin-bottom: 1rem;
         }
 
+        body {
+            cursor: url('./assets/custom_cursor.png'), auto;
+        }
+
         .badge {
-            color: #a855f7;
             transition: transform 0.2s;
-            cursor: pointer;
+            cursor: url('./assets/custom_cursor.png'), pointer;
         }
 
         .badge:hover {
             transform: scale(1.1);
+        }
+
+        .badge img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
         }
 
         .social-links {
@@ -196,6 +205,7 @@
 
         .social-link {
             transition: all 0.2s;
+            cursor: url('./assets/custom_cursor.png'), pointer;
         }
 
         .social-link:hover {
@@ -325,7 +335,7 @@
             height: 0.25rem;
             border-radius: 9999px;
             outline: none;
-            cursor: pointer;
+            cursor: url('./assets/custom_cursor.png'), pointer;
             -webkit-appearance: none;
         }
 
@@ -358,7 +368,7 @@
             background: none;
             border: none;
             color: #a855f7;
-            cursor: pointer;
+            cursor: url('./assets/custom_cursor.png'), pointer;
             padding: 0;
             display: flex;
             align-items: center;
@@ -374,7 +384,7 @@
             border: none;
             padding: 0.75rem;
             border-radius: 50%;
-            cursor: pointer;
+            cursor: url('./assets/custom_cursor.png'), pointer;
             display: flex;
             align-items: center;
             transition: background 0.2s;
@@ -421,15 +431,17 @@
             <h1 class="name">Rio</h1>
 
             <div class="badges">
-                <div class="badge" title="OG">
-                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 499.541 499.541">
-                        <path d="m321.984 287.552-43.008 211.989c.085-.149.235-.213.299-.363L416.15 225.429zm89.024-84.288L250.325 2.411 318.933 264zM227.648 0 83.392 270.421h215.189zM84.843 291.755l172.906 204.992 41.6-204.992z"/>
-                    </svg>
+                <div class="badge" title="Nitro">
+                    <img src="./assets/nitro.png" alt="Nitro">
                 </div>
-                <div class="badge" title="Premium">
-                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 47.05 47.05">
-                        <path d="M43.656 16.983c-.73-2.255.267-5.41-1.1-7.287-1.379-1.895-4.699-1.915-6.594-3.295-1.876-1.365-2.914-4.523-5.168-5.255-2.174-.706-4.859 1.216-7.271 1.216-2.41 0-5.097-1.922-7.271-1.216-2.254.731-3.292 3.89-5.169 5.255-1.895 1.38-5.213 1.4-6.592 3.295-1.365 1.877-.369 5.032-1.1 7.287C2.685 19.157 0 21.114 0 23.525s2.686 4.367 3.393 6.542c.73 2.254-.267 5.41 1.1 7.287 1.379 1.896 4.698 1.915 6.593 3.294 1.876 1.366 2.914 4.524 5.168 5.257 2.175.705 4.86-1.217 7.271-1.217s5.097 1.922 7.271 1.217c2.254-.731 3.292-3.891 5.168-5.256 1.896-1.379 5.214-1.399 6.595-3.295 1.364-1.876.367-5.032 1.098-7.286.707-2.175 3.394-4.133 3.394-6.542-.003-2.412-2.688-4.368-3.395-6.543M23.524 40.031c-9.102 0-16.507-7.403-16.507-16.506 0-9.102 7.405-16.507 16.507-16.507s16.507 7.405 16.507 16.507-7.405 16.506-16.507 16.506"/>
-                    </svg>
+                <div class="badge" title="Boost">
+                    <img src="./assets/boost.png" alt="Boost">
+                </div>
+                <div class="badge" title="Owner">
+                    <img src="./assets/owner.png" alt="Owner">
+                </div>
+                <div class="badge" title="Verified">
+                    <img src="./assets/verified.png" alt="Verified">
                 </div>
             </div>
 
@@ -574,9 +586,12 @@
         // Overlay click
         overlay.addEventListener('click', () => {
             overlay.classList.add('hidden');
-            audio.play();
-            isPlaying = true;
-            updatePlayButton();
+            audio.play().then(() => {
+                isPlaying = true;
+                updatePlayButton();
+            }).catch(error => {
+                console.log('Audio play failed:', error);
+            });
         });
 
         // Volume control
