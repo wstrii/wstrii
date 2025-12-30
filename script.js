@@ -5,23 +5,40 @@ document.addEventListener('mousemove', (e) => {
     cursor.style.top = e.clientY + 'px';
 });
 
+// Hide default cursor
+document.body.style.cursor = 'none';
+
 // Audio Player Controls
 const playBtn = document.querySelector('.control-btn');
-const audio = new Audio('assets/background-music.mp3');
+const progressFill = document.querySelector('.progress-fill');
+const currentTimeEl = document.querySelector('.current-time');
+const audio = new Audio('https://r2.guns.lol/0167ceb1-7b3c-4c7d-87ff-158adccc9e1b.mp3');
 let isPlaying = false;
 
+// Audio controls
 playBtn.addEventListener('click', () => {
     if (isPlaying) {
         audio.pause();
-        playBtn.innerHTML = '<i class="fas fa-play"></i>';
+        playBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
     } else {
         audio.play();
-        playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        playBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
     }
     isPlaying = !isPlaying;
 });
 
-// Add hover effects to social links
+// Update progress bar
+audio.addEventListener('timeupdate', () => {
+    const progress = (audio.currentTime / audio.duration) * 100;
+    progressFill.style.width = progress + '%';
+    
+    // Update time display
+    const currentMinutes = Math.floor(audio.currentTime / 60);
+    const currentSeconds = Math.floor(audio.currentTime % 60);
+    currentTimeEl.textContent = `${currentMinutes}:${currentSeconds.toString().padStart(2, '0')}`;
+});
+
+// Social link hover effects
 document.querySelectorAll('.social-link').forEach(link => {
     link.addEventListener('mouseenter', () => {
         link.style.transform = 'translateY(-2px) scale(1.02)';
@@ -32,7 +49,7 @@ document.querySelectorAll('.social-link').forEach(link => {
     });
 });
 
-// Badge hover effects
+// Badge hover effects with tooltips
 document.querySelectorAll('.badge').forEach(badge => {
     badge.addEventListener('mouseenter', () => {
         badge.style.transform = 'scale(1.1) rotate(5deg)';
@@ -43,28 +60,22 @@ document.querySelectorAll('.badge').forEach(badge => {
     });
 });
 
-// Smooth scroll behavior
-document.documentElement.style.scrollBehavior = 'smooth';
+// Parallax effect for profile card
+let mouseX = 0;
+let mouseY = 0;
 
-// Add page load animation
-window.addEventListener('load', () => {
-    document.body.style.opacity = '1';
+document.addEventListener('mousemove', (e) => {
+    mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+    mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    
+    const profileCard = document.querySelector('.profile-card');
+    if (profileCard) {
+        profileCard.style.transform = `perspective(1000px) rotateX(${mouseY * 2}deg) rotateY(${mouseX * 2}deg) scale3d(1, 1, 1)`;
+    }
 });
 
-// Set initial opacity for fade-in effect
-document.body.style.opacity = '0';
-document.body.style.transition = 'opacity 0.5s ease';
-
-// Parallax effect for background
-window.addEventListener('scroll', () => {
-    const scrolled = window.pageYOffset;
-    const parallax = document.querySelector('.background-video');
-    parallax.style.transform = `translateY(${scrolled * 0.5}px)`;
-});
-
-// Add click sound effect (optional)
+// Add ripple effect on click
 document.addEventListener('click', (e) => {
-    // Create ripple effect
     const ripple = document.createElement('div');
     ripple.className = 'ripple-effect';
     ripple.style.left = e.clientX + 'px';
@@ -76,7 +87,7 @@ document.addEventListener('click', (e) => {
     }, 600);
 });
 
-// Add ripple effect styles dynamically
+// Add ripple styles
 const rippleStyles = document.createElement('style');
 rippleStyles.textContent = `
     .ripple-effect {
@@ -100,3 +111,38 @@ rippleStyles.textContent = `
     }
 `;
 document.head.appendChild(rippleStyles);
+
+// Smooth animations on load
+window.addEventListener('load', () => {
+    document.body.style.opacity = '1';
+});
+
+// Set initial opacity
+document.body.style.opacity = '0';
+document.body.style.transition = 'opacity 0.5s ease';
+
+// Add hover sound effect (optional)
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+const audioContext = new AudioContext();
+
+function playHoverSound() {
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+    
+    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.1);
+}
+
+// Add hover sound to interactive elements
+document.querySelectorAll('.social-link, .badge, .control-btn').forEach(element => {
+    element.addEventListener('mouseenter', playHoverSound);
+});
